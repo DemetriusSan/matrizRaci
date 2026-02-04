@@ -1,0 +1,237 @@
+<div class="raci-container">
+  <!-- Cabeçalho -->
+  <header class="raci-header">
+    <div class="header-content" *ngIf="matrix">
+      <h1>{{ matrix.name }}</h1>
+      <p class="header-subtitle" *ngIf="matrix.description">{{ matrix.description }}</p>
+      <div class="header-meta">
+        <span class="meta-item"><strong>Equipe:</strong> {{ matrix.team }}</span>
+        <span class="meta-item"><strong>Departamento:</strong> {{ matrix.department }}</span>
+        <span class="meta-item"><strong>Atualizado:</strong> {{ matrix.updatedDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+    <button class="btn btn-export" (click)="exportToJSON()" title="Exportar para JSON">
+      📥 JSON
+    </button>
+    <button class="btn btn-export" (click)="exportToExcel()" title="Exportar para Excel">
+      📊 Excel
+    </button>
+  </header>
+
+  <div class="validation-section" *ngIf="validationErrors.length > 0">
+    <div class="validation-errors">
+      <h3>⚠️ Avisos de Validação:</h3>
+      <ul>
+        <li *ngFor="let error of validationErrors">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="validation-section" *ngIf="validationErrors.length === 0 && matrix && matrix.tasks.length > 0 && matrix.stakeholders.length > 0">
+    <div class="validation-success">
+      <h3>✅ Matriz Válida</h3>
+      <p>A estrutura da Matriz RACI está correta.</p>
+    </div>
+  </div>
+
+  <!-- Ferramentas -->
+  <div class="tools-section">
+    <div class="tools-left">
+      <button class="btn btn-primary" (click)="openAddTaskForm()" *ngIf="!showAddTaskForm">
+        ➕ Adicionar Tarefa
+      </button>
+      <button class="btn btn-primary" (click)="openAddStakeholderForm()" *ngIf="!showAddStakeholderForm">
+        ➕ Adicionar Stakeholder
+      </button>
+    </div>
+
+    <!-- Legenda RACI -->
+    <div class="legend">
+      <div class="legend-item" *ngFor="let role of [RACIRole.RESPONSIBLE, RACIRole.ACCOUNTABLE, RACIRole.CONSULTED, RACIRole.INFORMED]">
+        <span
+          class="legend-box"
+          [style.backgroundColor]="getCellBackgroundColor(role)"
+          [style.color]="getCellTextColor(role)"
+        >
+          {{ role }}
+        </span>
+        <span class="legend-text">
+          <strong>{{ RACI_DEFINITIONS[role].name }}</strong> - {{ RACI_DEFINITIONS[role].description }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário de Nova Tarefa -->
+  <div class="form-section" *ngIf="showAddTaskForm">
+    <div class="form-container">
+      <h3>Nova Tarefa</h3>
+      <div class="form-group">
+        <label>Nome da Tarefa *</label>
+        <input
+          type="text"
+          [(ngModel)]="newTaskName"
+          placeholder="Digite o nome da tarefa"
+          class="form-input"
+        />
+      </div>
+      <div class="form-group">
+        <label>Descrição</label>
+        <textarea
+          [(ngModel)]="newTaskDescription"
+          placeholder="Digite a descrição da tarefa"
+          class="form-input"
+          rows="3"
+        ></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-success" (click)="addTask()">Adicionar</button>
+        <button class="btn btn-cancel" (click)="cancelAddTask()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário de Novo Stakeholder -->
+  <div class="form-section" *ngIf="showAddStakeholderForm">
+    <div class="form-container">
+      <h3>Novo Stakeholder</h3>
+      <div class="form-group">
+        <label>Nome do Stakeholder *</label>
+        <input
+          type="text"
+          [(ngModel)]="newStakeholder"
+          placeholder="Digite o nome do stakeholder"
+          class="form-input"
+        />
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-success" (click)="addStakeholder()">Adicionar</button>
+        <button class="btn btn-cancel" (click)="cancelAddStakeholder()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Matriz RACI -->
+  <div class="matrix-wrapper" *ngIf="matrix">
+    <table class="raci-matrix-table">
+      <thead>
+        <tr>
+          <th class="fixed-column">Tarefas</th>
+          <th *ngFor="let stakeholder of matrix.stakeholders" class="stakeholder-header">
+            <div class="stakeholder-content">
+              <span class="stakeholder-name">{{ stakeholder }}</span>
+              <button
+                class="btn-small btn-delete"
+                (click)="removeStakeholder(stakeholder)"
+                title="Remover stakeholder"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </th>
+        </tr>
+
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of matrix.tasks" [class.selected]="selectedTaskId === task.id">
+          <td class="fixed-column task-cell">
+            <div class="task-info">
+              <div class="task-header">
+                <span class="task-name">{{ task.name }}</span>
+                <button
+                  class="btn-small btn-delete"
+                  (click)="removeTask(task.id)"
+                  title="Remover tarefa"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div *ngIf="task.description" class="task-description">{{ task.description }}</div>
+            </div>
+            <div class="task-actions">
+              <button
+                class="btn-small"
+                [class.active]="selectedTaskId === task.id"
+                (click)="selectedTaskId = selectedTaskId === task.id ? null : task.id"
+                title="Expandir detalhes"
+              >
+                ⋯
+              </button>
+            </div>
+          </td>
+          <td
+            *ngFor="let stakeholder of matrix.stakeholders"
+            class="raci-cell"
+            [style.backgroundColor]="getCellBackgroundColor(getAssignment(task.id, stakeholder)?.role || null)"
+            [style.color]="getCellTextColor(getAssignment(task.id, stakeholder)?.role || null)"
+            (click)="toggleRole(task.id, stakeholder)"
+            title="Clique para alterar o papel"
+          >
+            <span class="cell-content">
+              {{ getAssignment(task.id, stakeholder)?.role || '-' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Resumo em Quadrados Horizontais -->
+    <div class="summary-section" *ngIf="matrix && matrix.stakeholders.length > 0">
+      <h3 class="summary-title">Resumo de Atribuições</h3>
+      <div class="summary-cards">
+        <div *ngFor="let stakeholder of matrix.stakeholders" class="summary-card">
+          <div class="summary-card-header">{{ stakeholder }}</div>
+          <div class="summary-card-content">
+            <div *ngIf="getRoleCount(stakeholder, RACIRole.RESPONSIBLE) > 0" class="role-count">
+              <span class="role-badge responsible">R</span>
+              <span class="count">{{ getRoleCount(stakeholder, RACIRole.RESPONSIBLE) }}</span>
+            </div>
+            <div *ngIf="getRoleCount(stakeholder, RACIRole.ACCOUNTABLE) > 0" class="role-count">
+              <span class="role-badge accountable">A</span>
+              <span class="count">{{ getRoleCount(stakeholder, RACIRole.ACCOUNTABLE) }}</span>
+            </div>
+            <div *ngIf="getRoleCount(stakeholder, RACIRole.CONSULTED) > 0" class="role-count">
+              <span class="role-badge consulted">C</span>
+              <span class="count">{{ getRoleCount(stakeholder, RACIRole.CONSULTED) }}</span>
+            </div>
+            <div *ngIf="getRoleCount(stakeholder, RACIRole.INFORMED) > 0" class="role-count">
+              <span class="role-badge informed">I</span>
+              <span class="count">{{ getRoleCount(stakeholder, RACIRole.INFORMED) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalhe da Tarefa Selecionada -->
+    <div class="task-detail" *ngIf="selectedTaskId && getSelectedTask() as selectedTask">
+      <div class="detail-container">
+        <h3>Detalhes da Tarefa: {{ selectedTask.name }}</h3>
+        <p *ngIf="selectedTask.description" class="detail-description">{{ selectedTask.description }}</p>
+
+        <div class="assignment-list">
+          <h4>Atribuições:</h4>
+          <div *ngIf="selectedTask.assignments.size === 0" class="no-assignments">
+            Nenhuma atribuição definida. Clique nas células para atribuir papéis.
+          </div>
+          <div *ngFor="let item of selectedTask.assignments | keyvalue" class="assignment-item">
+            <span class="assignment-stakeholder">{{ item.key }}</span>
+            <span
+              class="assignment-role"
+              *ngIf="item.value.role"
+              [style.backgroundColor]="getCellBackgroundColor(item.value.role)"
+              [style.color]="getCellTextColor(item.value.role)"
+            >
+              {{ RACI_DEFINITIONS[item.value.role].name }} ({{ item.value.role }})
+            </span>
+            <span class="assignment-none" *ngIf="!item.value.role">Sem atribuição</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem quando vazio -->
+  <div class="empty-state" *ngIf="!matrix || (matrix.tasks.length === 0 && matrix.stakeholders.length === 0)">
+    <p>👋 Comece adicionando tarefas e stakeholders para criar sua Matriz RACI</p>
+  </div>
