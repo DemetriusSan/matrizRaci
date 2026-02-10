@@ -13,7 +13,11 @@
   </div>
   <div class="menu" [class.open]="menuOpen">
     <a routerLink="/" (click)="closeMenu()">Home</a>
-    <a routerLink="/raci" (click)="closeMenu()">Matriz RACI</a>
+    <div class="menu-group">
+      <div class="menu-title">Ferramentas de Qualidade</div>
+      <a routerLink="/raci" (click)="closeMenu()">Matriz RACI</a>
+      <a routerLink="/bpmn" (click)="closeMenu()">BPMN</a>
+    </div>
     <a routerLink="/tutorial" (click)="closeMenu()">Tutorial RACI</a>
   </div>
 </nav>

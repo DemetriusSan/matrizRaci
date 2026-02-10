@@ -108,6 +108,19 @@
   transition: background 0.3s;
 }
 
+.menu-group {
+  border-bottom: 1px solid #eee;
+}
+
+.menu-title {
+  padding: 12px 20px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #666;
+}
+
 .menu a:hover {
   background: #f8f9fa;
 }

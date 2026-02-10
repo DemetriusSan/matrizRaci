@@ -1,0 +1,72 @@
+<main class="bpmn-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Ferramenta BPMN</p>
+      <h1>Modele processos com clareza</h1>
+      <p class="subtitle">
+        Crie diagramas BPMN reais, salve em XML e exporte em JPG para compartilhar.
+      </p>
+    </div>
+    <a routerLink="/" class="btn btn-ghost">← Voltar para Home</a>
+  </header>
+
+  <section class="toolbar">
+    <button class="btn btn-primary" (click)="createNewDiagram()">Novo diagrama</button>
+    <button class="btn btn-ghost" (click)="saveXml()">Salvar BPMN</button>
+    <label class="btn btn-ghost file-upload">
+      Abrir BPMN
+      <input type="file" accept=".bpmn,.xml" (change)="onFileSelected($event)" />
+    </label>
+    <button class="btn btn-ghost" (click)="exportJpg()">Exportar JPG</button>
+    <button class="btn btn-ghost" (click)="toggleConnectMode()">
+      {{ connectMode ? 'Cancelar conexão' : 'Conectar (seta)' }}
+    </button>
+    <a routerLink="/bpmn/aprender" class="btn btn-ghost">Aprender BPMN</a>
+  </section>
+
+  <section class="canvas-card">
+    <div class="canvas" #canvas></div>
+    <aside class="properties-panel">
+      <h3>Editar rótulo</h3>
+      <p class="helper">
+        Selecione um elemento e escreva o texto. Para decisões, selecione o gateway ou a seta.
+      </p>
+      <label class="field">
+        <span>Nome</span>
+        <input
+          type="text"
+          [(ngModel)]="selectedName"
+          (ngModelChange)="onNameChange($event)"
+          [disabled]="!canEditLabel"
+          placeholder="Selecione um elemento"
+        />
+      </label>
+      <div class="meta" *ngIf="selectedType">Tipo: {{ selectedType }}</div>
+    </aside>
+    <p class="tool-hint" *ngIf="connectHint">{{ connectHint }}</p>
+    <p class="status" *ngIf="statusMessage">{{ statusMessage }}</p>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </section>
+
+  <section class="tips">
+    <h2>Guia rápido BPMN</h2>
+    <div class="tip-grid">
+      <article class="tip-card">
+        <h3>🟢 Evento de início</h3>
+        <p>Marque onde o processo começa.</p>
+      </article>
+      <article class="tip-card">
+        <h3>⬛ Tarefa</h3>
+        <p>Represente uma atividade executada.</p>
+      </article>
+      <article class="tip-card">
+        <h3>🔷 Gateway</h3>
+        <p>Crie decisões e caminhos alternativos.</p>
+      </article>
+      <article class="tip-card">
+        <h3>🏁 Evento de fim</h3>
+        <p>Indique onde o fluxo termina.</p>
+      </article>
+    </div>
+  </section>
+</main>
