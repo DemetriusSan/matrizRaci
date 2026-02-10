@@ -21,11 +21,21 @@
     <button class="btn btn-ghost" (click)="toggleConnectMode()">
       {{ connectMode ? 'Cancelar conexão' : 'Conectar (seta)' }}
     </button>
+    <label class="icon-size-control">
+      <span>Tamanho ícones</span>
+      <input
+        type="range"
+        min="0.8"
+        max="1.6"
+        step="0.1"
+        [(ngModel)]="iconScale"
+      />
+    </label>
     <a routerLink="/bpmn/aprender" class="btn btn-ghost">Aprender BPMN</a>
   </section>
 
   <section class="canvas-card">
-    <div class="canvas" #canvas></div>
+    <div class="canvas" #canvas [style.--palette-scale]="iconScale"></div>
     <aside class="properties-panel">
       <h3>Editar rótulo</h3>
       <p class="helper">

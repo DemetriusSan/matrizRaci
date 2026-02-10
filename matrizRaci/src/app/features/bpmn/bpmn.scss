@@ -48,6 +48,22 @@ h1 {
   margin: 24px 0;
 }
 
+.icon-size-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.4);
+  color: #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.icon-size-control input[type='range'] {
+  width: 140px;
+}
+
 .btn {
   padding: 10px 18px;
   border-radius: 12px;
@@ -153,6 +169,8 @@ h1 {
   position: absolute;
   top: 14px;
   left: 14px;
+  transform: scale(var(--palette-scale, 1));
+  transform-origin: top left;
 }
 
 .canvas .djs-palette .djs-palette-entries {

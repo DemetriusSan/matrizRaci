@@ -14,6 +14,24 @@ import { RouterLink } from '@angular/router';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { Canvg } from 'canvg';
 import resizeModule from 'diagram-js/lib/features/resize';
+import RuleProvider from 'diagram-js/lib/features/rules/RuleProvider';
+
+class AllowResizeRules extends RuleProvider {
+  static override $inject = ['eventBus'];
+
+  constructor(eventBus: any) {
+    super(eventBus);
+  }
+
+  override init(): void {
+    this.addRule('shape.resize', 1500, () => true);
+  }
+}
+
+const allowResizeModule = {
+  __init__: ['allowResizeRules'],
+  allowResizeRules: ['type', AllowResizeRules],
+};
 
 @Component({
   selector: 'app-bpmn',
@@ -37,6 +55,7 @@ export class BpmnEditor implements AfterViewInit, OnDestroy {
   canEditLabel = false;
   connectMode = false;
   connectHint = '';
+  iconScale = 1;
 
   constructor(
     @Inject(PLATFORM_ID) platformId: object,
@@ -80,7 +99,7 @@ export class BpmnEditor implements AfterViewInit, OnDestroy {
     try {
       this.modeler = new Modeler({
         container,
-        additionalModules: [resizeModule],
+        additionalModules: [resizeModule, allowResizeModule],
         keyboard: {
           bindTo: window,
         },
