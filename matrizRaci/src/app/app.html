@@ -1,14 +1,19 @@
 <nav class="navbar">
-  <div class="navbar-brand">
-    <h1>Matriz RACI</h1>
-  </div>
   <button class="hamburger" (click)="toggleMenu()" [class.active]="menuOpen">
     <span></span>
     <span></span>
     <span></span>
   </button>
+  <div class="navbar-brand">
+    <span class="logo-mark">◆</span>
+    <div class="logo-text">
+      <span class="logo-name">DeSan-Qualit</span>
+      <span class="logo-subtitle">knowlogy</span>
+    </div>
+  </div>
   <div class="menu" [class.open]="menuOpen">
-    <a routerLink="/" (click)="closeMenu()">Matriz RACI</a>
+    <a routerLink="/" (click)="closeMenu()">Home</a>
+    <a routerLink="/raci" (click)="closeMenu()">Matriz RACI</a>
     <a routerLink="/tutorial" (click)="closeMenu()">Tutorial RACI</a>
   </div>
 </nav>

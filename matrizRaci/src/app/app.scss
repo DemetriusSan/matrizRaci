@@ -1,18 +1,55 @@
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
+  gap: 12px;
 }
 
 .navbar-brand h1 {
   margin: 0;
   font-size: 24px;
   font-weight: 700;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.logo-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .hamburger {
@@ -47,7 +84,7 @@
 .menu {
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   background: white;
   color: #333;
   width: 200px;
