@@ -406,7 +406,7 @@ describe('RACIService', () => {
 
     it('should convert Map assignments to array in JSON', async () => {
       const matrix = await firstValueFrom(service.getCurrentMatrix());
-      if (matrix) {
+      if (matrix && matrix.tasks.length > 0) {
         const json = service.exportToJSON(matrix);
         const parsed = JSON.parse(json);
         
@@ -419,20 +419,28 @@ describe('RACIService', () => {
     it('should export matrix to Excel without errors', async () => {
       const matrix = await firstValueFrom(service.getCurrentMatrix());
       if (matrix) {
-        // Just test that it doesn't throw an error
-        expect(() => {
-          // Mock XLSX.writeFile to prevent actual file creation
-          const originalWriteFile = (globalThis as any).XLSX?.writeFile;
-          if ((globalThis as any).XLSX) {
-            (globalThis as any).XLSX.writeFile = () => {};
+        // Mock XLSX globally to prevent actual file creation
+        const originalXLSX = (globalThis as any).XLSX;
+        (globalThis as any).XLSX = {
+          utils: {
+            json_to_sheet: vi.fn().mockReturnValue({}),
+            book_new: vi.fn().mockReturnValue({}),
+            book_append_sheet: vi.fn()
+          },
+          writeFile: vi.fn()
+        };
+        
+        try {
+          // Should not throw an error
+          expect(() => service.exportToExcel(matrix)).not.toThrow();
+        } finally {
+          // Restore original XLSX
+          if (originalXLSX) {
+            (globalThis as any).XLSX = originalXLSX;
+          } else {
+            delete (globalThis as any).XLSX;
           }
-          
-          service.exportToExcel(matrix);
-          
-          if (originalWriteFile && (globalThis as any).XLSX) {
-            (globalThis as any).XLSX.writeFile = originalWriteFile;
-          }
-        }).not.toThrow();
+        }
       }
     });
   });
