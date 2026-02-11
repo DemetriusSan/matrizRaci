@@ -44,9 +44,14 @@ describe('RACIService', () => {
     });
 
     it('should add new matrix to matrices list', async () => {
-      const initialCount = service['matrices$'].value.length;
+      // Get initial matrices count
+      const initialMatrices = await firstValueFrom(service.getMatrices());
+      const initialCount = initialMatrices.length;
+      
+      // Create a new matrix
       service.createMatrix('New Matrix', 'Team', 'Dept');
       
+      // Verify the count increased
       const matrices = await firstValueFrom(service.getMatrices());
       expect(matrices.length).toBe(initialCount + 1);
     });
@@ -59,7 +64,7 @@ describe('RACIService', () => {
     });
 
     it('should set current matrix by id', async () => {
-      const matrices = service['matrices$'].value;
+      const matrices = await firstValueFrom(service.getMatrices());
       if (matrices.length > 0) {
         const matrixId = matrices[0].id;
         service.setCurrentMatrix(matrixId);
@@ -69,12 +74,12 @@ describe('RACIService', () => {
       }
     });
 
-    it('should not change current matrix if id not found', () => {
-      const currentBefore = service['currentMatrix$'].value;
+    it('should not change current matrix if id not found', async () => {
+      const currentBefore = await firstValueFrom(service.getCurrentMatrix());
       service.setCurrentMatrix('non-existent-id');
-      const currentAfter = service['currentMatrix$'].value;
+      const currentAfter = await firstValueFrom(service.getCurrentMatrix());
       
-      expect(currentAfter).toBe(currentBefore);
+      expect(currentAfter).toEqual(currentBefore);
     });
   });
 
@@ -108,14 +113,26 @@ describe('RACIService', () => {
     });
 
     it('should update matrix updatedDate when adding stakeholder', async () => {
-      const currentMatrix = service['currentMatrix$'].value;
-      const oldDate = currentMatrix?.updatedDate;
+      // Get the initial state
+      const initialMatrix = await firstValueFrom(service.getCurrentMatrix());
+      const oldDate = initialMatrix?.updatedDate?.getTime();
       
       // Small delay to ensure different timestamp
       await new Promise(resolve => setTimeout(resolve, 10));
+      
+      // Add stakeholder
       service.addStakeholder('New Person');
-      const newDate = service['currentMatrix$'].value?.updatedDate;
-      expect(newDate).not.toEqual(oldDate);
+      
+      // Get updated state
+      const updatedMatrix = await firstValueFrom(service.getCurrentMatrix());
+      const newDate = updatedMatrix?.updatedDate?.getTime();
+      
+      // Verify the date changed
+      expect(newDate).toBeDefined();
+      expect(oldDate).toBeDefined();
+      if (newDate && oldDate) {
+        expect(newDate).toBeGreaterThan(oldDate);
+      }
     });
   });
 
@@ -153,12 +170,17 @@ describe('RACIService', () => {
 
     it('should not update if task id not found', async () => {
       service.addTask(testTask);
-      const beforeUpdate = service['currentMatrix$'].value?.tasks.length;
       
+      // Get task count before attempting update
+      const matrixBefore = await firstValueFrom(service.getCurrentMatrix());
+      const taskCountBefore = matrixBefore?.tasks.length;
+      
+      // Try to update non-existent task
       service.updateTask('non-existent', testTask);
       
-      const matrix = await firstValueFrom(service.getCurrentMatrix());
-      expect(matrix?.tasks.length).toBe(beforeUpdate);
+      // Verify task count hasn't changed
+      const matrixAfter = await firstValueFrom(service.getCurrentMatrix());
+      expect(matrixAfter?.tasks.length).toBe(taskCountBefore);
     });
 
     it('should remove task from current matrix', async () => {
@@ -170,12 +192,26 @@ describe('RACIService', () => {
     });
 
     it('should update matrix updatedDate when modifying tasks', async () => {
-      const oldDate = service['currentMatrix$'].value?.updatedDate;
+      // Get initial state
+      const initialMatrix = await firstValueFrom(service.getCurrentMatrix());
+      const oldDate = initialMatrix?.updatedDate?.getTime();
       
+      // Small delay to ensure different timestamp
       await new Promise(resolve => setTimeout(resolve, 10));
+      
+      // Add task
       service.addTask(testTask);
-      const newDate = service['currentMatrix$'].value?.updatedDate;
-      expect(newDate).not.toEqual(oldDate);
+      
+      // Get updated state
+      const updatedMatrix = await firstValueFrom(service.getCurrentMatrix());
+      const newDate = updatedMatrix?.updatedDate?.getTime();
+      
+      // Verify the date changed
+      expect(newDate).toBeDefined();
+      expect(oldDate).toBeDefined();
+      if (newDate && oldDate) {
+        expect(newDate).toBeGreaterThan(oldDate);
+      }
     });
   });
 
@@ -211,11 +247,16 @@ describe('RACIService', () => {
       expect(assignment?.role).toBe(RACIRole.RESPONSIBLE);
     });
 
-    it('should not update assignment if task not found', () => {
-      const currentMatrix = service['currentMatrix$'].value;
+    it('should not update assignment if task not found', async () => {
+      // Get current state
+      const matrixBefore = await firstValueFrom(service.getCurrentMatrix());
+      
+      // Try to update non-existent task
       service.updateAssignment('non-existent', 'Test Stakeholder', testAssignment);
       
-      expect(service['currentMatrix$'].value).toEqual(currentMatrix);
+      // Verify matrix hasn't changed
+      const matrixAfter = await firstValueFrom(service.getCurrentMatrix());
+      expect(matrixAfter).toEqual(matrixBefore);
     });
   });
 
@@ -349,8 +390,8 @@ describe('RACIService', () => {
   });
 
   describe('Export to JSON', () => {
-    it('should export matrix to JSON string', () => {
-      const matrix = service['currentMatrix$'].value;
+    it('should export matrix to JSON string', async () => {
+      const matrix = await firstValueFrom(service.getCurrentMatrix());
       if (matrix) {
         const json = service.exportToJSON(matrix);
         
@@ -363,8 +404,8 @@ describe('RACIService', () => {
       }
     });
 
-    it('should convert Map assignments to array in JSON', () => {
-      const matrix = service['currentMatrix$'].value;
+    it('should convert Map assignments to array in JSON', async () => {
+      const matrix = await firstValueFrom(service.getCurrentMatrix());
       if (matrix) {
         const json = service.exportToJSON(matrix);
         const parsed = JSON.parse(json);
@@ -375,8 +416,8 @@ describe('RACIService', () => {
   });
 
   describe('Export to Excel', () => {
-    it('should export matrix to Excel without errors', () => {
-      const matrix = service['currentMatrix$'].value;
+    it('should export matrix to Excel without errors', async () => {
+      const matrix = await firstValueFrom(service.getCurrentMatrix());
       if (matrix) {
         // Just test that it doesn't throw an error
         expect(() => {
