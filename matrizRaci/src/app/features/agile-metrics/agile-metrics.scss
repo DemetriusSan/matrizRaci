@@ -1,0 +1,387 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a 0%, #0b0f1f 55%, #05060a 100%);
+  color: #e2e8f0;
+}
+
+.metrics-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #cbd5f5;
+  line-height: 1.6;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-ghost {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.metrics-tabs {
+  --mat-tab-header-active-label-text-color: #38bdf8;
+  --mat-tab-header-active-indicator-color: #38bdf8;
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.metrics-page ::ng-deep .mat-mdc-tab-header .mdc-tab__text-label {
+  color: #e2e8f0;
+}
+
+.metrics-page ::ng-deep .mat-mdc-tab-header .mdc-tab--active .mdc-tab__text-label {
+  color: #38bdf8;
+}
+
+.tab-section {
+  padding: 24px 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.form-card {
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+}
+
+mat-card-title {
+  color: #f8fafc;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.metrics-page ::ng-deep .mat-mdc-form-field-input-control,
+.metrics-page ::ng-deep .mat-mdc-input-element,
+.metrics-page ::ng-deep .mat-mdc-select-value-text,
+.metrics-page ::ng-deep .mat-mdc-form-field-textarea-control {
+  color: #ffffff;
+  caret-color: #ffffff;
+}
+
+.metrics-page ::ng-deep .mat-mdc-form-field-label,
+.metrics-page ::ng-deep .mdc-floating-label,
+.metrics-page ::ng-deep .mat-mdc-select-placeholder,
+.metrics-page ::ng-deep .mat-mdc-form-field-hint,
+.metrics-page ::ng-deep .mat-mdc-form-field-error {
+  color: #cbd5f5;
+}
+
+.metrics-page ::ng-deep .mdc-text-field--filled,
+.metrics-page ::ng-deep .mdc-text-field--outlined {
+  background-color: rgba(15, 23, 42, 0.85);
+}
+
+.metrics-page ::ng-deep .mdc-notched-outline__leading,
+.metrics-page ::ng-deep .mdc-notched-outline__notch,
+.metrics-page ::ng-deep .mdc-notched-outline__trailing {
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+.baseline-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.baseline-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 12px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.kpi-card {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kpi-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.kpi-values .label {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.kpi-evolution {
+  margin-top: 12px;
+  color: #38bdf8;
+}
+
+.dashboard-card {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.status-pill {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+  margin-bottom: 12px;
+}
+
+.status-pill.go {
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
+}
+
+.chart-card {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.chart-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.roi-value {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #22c55e;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.history-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.values-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.actions button {
+  margin-right: 4px;
+}
+
+.edit-card {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.edit-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.comparison-result {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+}
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.report {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.report header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.report header img {
+  max-height: 60px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.report-section {
+  margin-top: 16px;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.config-form {
+  display: grid;
+  gap: 12px;
+}
+
+.logo-upload input {
+  display: none;
+}
+
+.radar-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.radar-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.radar-row h4 {
+  margin: 0;
+  color: #e2e8f0;
+}
+
+.roi-form {
+  display: grid;
+  gap: 12px;
+}
+
+.slides {
+  position: relative;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 320px;
+}
+
+.slides,
+.slides h2,
+.slides h3,
+.slides p,
+.slides li {
+  color: #e2e8f0;
+}
+
+.slide {
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+.slide h2 {
+  margin-top: 0;
+}
+
+.slides-controls {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .baseline-row {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,589 @@
+<main class="metrics-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Business Case Scrum</p>
+      <h1>Métricas da Transformação Ágil</h1>
+      <p class="subtitle">
+        Colete métricas semanais, compare com baseline e gere relatórios executivos.
+      </p>
+    </div>
+    <a routerLink="/" class="btn btn-ghost">← Voltar</a>
+  </header>
+
+  <mat-tab-group class="metrics-tabs">
+    <mat-tab label="Cadastro">
+      <section class="tab-section">
+        <div class="form-grid">
+          <mat-card class="form-card">
+            <mat-card-title>Produtividade</mat-card-title>
+            <form [formGroup]="productivityForm" (ngSubmit)="submitCategory('produtividade')">
+              <mat-form-field appearance="outline">
+                <mat-label>Data da medição</mat-label>
+                <input matInput [matDatepicker]="prodDate" formControlName="date" />
+                <mat-datepicker-toggle matSuffix [for]="prodDate"></mat-datepicker-toggle>
+                <mat-datepicker #prodDate></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" *ngFor="let metric of getDefinitionsByCategory('produtividade')">
+                <mat-label>{{ metric.label }}</mat-label>
+                <input matInput type="number" [formControlName]="metric.key" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Notas</mat-label>
+                <textarea matInput rows="2" formControlName="notes"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit">Salvar</button>
+            </form>
+          </mat-card>
+
+          <mat-card class="form-card">
+            <mat-card-title>Qualidade</mat-card-title>
+            <form [formGroup]="qualityForm" (ngSubmit)="submitCategory('qualidade')">
+              <mat-form-field appearance="outline">
+                <mat-label>Data da medição</mat-label>
+                <input matInput [matDatepicker]="qualDate" formControlName="date" />
+                <mat-datepicker-toggle matSuffix [for]="qualDate"></mat-datepicker-toggle>
+                <mat-datepicker #qualDate></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" *ngFor="let metric of getDefinitionsByCategory('qualidade')">
+                <mat-label>{{ metric.label }}</mat-label>
+                <input matInput type="number" [formControlName]="metric.key" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Notas</mat-label>
+                <textarea matInput rows="2" formControlName="notes"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit">Salvar</button>
+            </form>
+          </mat-card>
+
+          <mat-card class="form-card">
+            <mat-card-title>Satisfação</mat-card-title>
+            <form [formGroup]="satisfactionForm" (ngSubmit)="submitCategory('satisfacao')">
+              <mat-form-field appearance="outline">
+                <mat-label>Data da medição</mat-label>
+                <input matInput [matDatepicker]="satDate" formControlName="date" />
+                <mat-datepicker-toggle matSuffix [for]="satDate"></mat-datepicker-toggle>
+                <mat-datepicker #satDate></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" *ngFor="let metric of getDefinitionsByCategory('satisfacao')">
+                <mat-label>{{ metric.label }}</mat-label>
+                <input matInput type="number" [formControlName]="metric.key" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Notas</mat-label>
+                <textarea matInput rows="2" formControlName="notes"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit">Salvar</button>
+            </form>
+          </mat-card>
+
+          <mat-card class="form-card">
+            <mat-card-title>Processo</mat-card-title>
+            <form [formGroup]="processForm" (ngSubmit)="submitCategory('processo')">
+              <mat-form-field appearance="outline">
+                <mat-label>Data da medição</mat-label>
+                <input matInput [matDatepicker]="procDate" formControlName="date" />
+                <mat-datepicker-toggle matSuffix [for]="procDate"></mat-datepicker-toggle>
+                <mat-datepicker #procDate></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" *ngFor="let metric of getDefinitionsByCategory('processo')">
+                <mat-label>{{ metric.label }}</mat-label>
+                <input matInput type="number" [formControlName]="metric.key" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Notas</mat-label>
+                <textarea matInput rows="2" formControlName="notes"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit">Salvar</button>
+            </form>
+          </mat-card>
+        </div>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Baseline & Metas">
+      <section class="tab-section">
+        <mat-card>
+          <mat-card-title>Configurar baseline e metas</mat-card-title>
+          <form [formGroup]="baselineForm" class="baseline-grid">
+            <div class="baseline-row" *ngFor="let metric of getDefinitionsByCategory('produtividade')">
+              <h4>{{ metric.label }}</h4>
+              <mat-form-field appearance="outline">
+                <mat-label>Baseline</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_baseline'" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Meta</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_goal'" />
+              </mat-form-field>
+            </div>
+
+            <div class="baseline-row" *ngFor="let metric of getDefinitionsByCategory('qualidade')">
+              <h4>{{ metric.label }}</h4>
+              <mat-form-field appearance="outline">
+                <mat-label>Baseline</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_baseline'" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Meta</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_goal'" />
+              </mat-form-field>
+            </div>
+
+            <div class="baseline-row" *ngFor="let metric of getDefinitionsByCategory('satisfacao')">
+              <h4>{{ metric.label }}</h4>
+              <mat-form-field appearance="outline">
+                <mat-label>Baseline</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_baseline'" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Meta</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_goal'" />
+              </mat-form-field>
+            </div>
+
+            <div class="baseline-row" *ngFor="let metric of getDefinitionsByCategory('processo')">
+              <h4>{{ metric.label }}</h4>
+              <mat-form-field appearance="outline">
+                <mat-label>Baseline</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_baseline'" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Meta</mat-label>
+                <input matInput type="number" [formControlName]="metric.key + '_goal'" />
+              </mat-form-field>
+            </div>
+          </form>
+          <button mat-raised-button color="primary" (click)="saveBaseline()">Salvar baseline</button>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Dashboard">
+      <section class="tab-section">
+        <div class="kpi-grid">
+          <mat-card class="kpi-card" *ngFor="let kpi of kpis">
+            <div class="kpi-header">
+              <h3>{{ kpi.definition.label }}</h3>
+              <span class="status-icon">{{ getStatusIcon(kpi.status) }}</span>
+            </div>
+            <div class="kpi-values">
+              <div>
+                <span class="label">Atual</span>
+                <strong>{{ kpi.currentValue ?? '-' }}</strong>
+              </div>
+              <div>
+                <span class="label">Baseline</span>
+                <strong>{{ kpi.baseline }}</strong>
+              </div>
+              <div>
+                <span class="label">Meta</span>
+                <strong>{{ kpi.goal }}</strong>
+              </div>
+            </div>
+            <div class="kpi-evolution">
+              Evolução: {{ kpi.evolutionPercent !== null ? (kpi.evolutionPercent | number: '1.0-1') + '%' : '-' }}
+            </div>
+          </mat-card>
+        </div>
+
+        <mat-card class="dashboard-card">
+          <mat-card-title>Semáforo Geral</mat-card-title>
+          <div class="go-no-go">
+            <div class="status-pill" [class.go]="getGoNoGo().status === 'GO para Onda 2'">
+              {{ getGoNoGo().status }}
+            </div>
+            <ul>
+              <li *ngFor="let detail of getGoNoGo().details">{{ detail }}</li>
+            </ul>
+          </div>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Gráficos">
+      <section class="tab-section">
+        <mat-card class="chart-card" *ngFor="let metric of METRIC_DEFINITIONS">
+          <mat-card-title>{{ metric.label }}</mat-card-title>
+          <div class="chart-grid">
+            <div class="chart-panel">
+              <canvas
+                baseChart
+                [data]="getLineChart(metric.key)?.data"
+                [options]="getLineChart(metric.key)?.options"
+                [type]="'line'"
+              ></canvas>
+            </div>
+            <div class="chart-panel">
+              <canvas
+                baseChart
+                [data]="getComparisonChart(metric.key)?.data"
+                [options]="getComparisonChart(metric.key)?.options"
+                [type]="'bar'"
+              ></canvas>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-title>Radar de Maturidade Ágil</mat-card-title>
+          <canvas
+            baseChart
+            [data]="radarChart?.data"
+            [options]="radarChart?.options"
+            [type]="'radar'"
+          ></canvas>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-title>ROI e Projeções</mat-card-title>
+          <canvas
+            baseChart
+            [data]="roiChart?.data"
+            [options]="roiChart?.options"
+            [type]="'line'"
+          ></canvas>
+          <div class="roi-value">ROI: {{ getRoiValue() | number: '1.0-1' }}%</div>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Histórico">
+      <section class="tab-section">
+        <mat-card>
+          <mat-card-title>Histórico de medições</mat-card-title>
+          <div class="filters">
+            <mat-form-field appearance="outline">
+              <mat-label>Categoria</mat-label>
+              <mat-select [(value)]="filterCategory">
+                <mat-option value="todas">Todas</mat-option>
+                <mat-option value="produtividade">Produtividade</mat-option>
+                <mat-option value="qualidade">Qualidade</mat-option>
+                <mat-option value="satisfacao">Satisfação</mat-option>
+                <mat-option value="processo">Processo</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Data inicial</mat-label>
+              <input matInput type="date" [(ngModel)]="filterStart" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Data final</mat-label>
+              <input matInput type="date" [(ngModel)]="filterEnd" />
+            </mat-form-field>
+            <button mat-stroked-button color="primary" (click)="exportEntries()">Exportar Excel</button>
+          </div>
+
+          <table mat-table [dataSource]="getFilteredEntries()" class="history-table">
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Data</th>
+              <td mat-cell *matCellDef="let entry">{{ entry.date | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Categoria</th>
+              <td mat-cell *matCellDef="let entry">{{ getCategoryLabel(entry.category) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="values">
+              <th mat-header-cell *matHeaderCellDef>Valores</th>
+              <td mat-cell *matCellDef="let entry">
+                <div class="values-list">
+                  <span *ngFor="let item of entry.values | keyvalue">
+                    {{ item.key }}: {{ item.value }}
+                  </span>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="notes">
+              <th mat-header-cell *matHeaderCellDef>Notas</th>
+              <td mat-cell *matCellDef="let entry">{{ entry.notes || '-' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Ações</th>
+              <td mat-cell *matCellDef="let entry" class="actions">
+                <button mat-icon-button color="primary" (click)="startEdit(entry)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteEntry(entry)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="historyColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: historyColumns"></tr>
+          </table>
+        </mat-card>
+
+        <mat-card class="edit-card" *ngIf="editingEntry && editForm" [formGroup]="editForm">
+          <mat-card-title>Editar medição</mat-card-title>
+          <div class="edit-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Data</mat-label>
+              <input matInput [matDatepicker]="editDate" formControlName="date" />
+              <mat-datepicker-toggle matSuffix [for]="editDate"></mat-datepicker-toggle>
+              <mat-datepicker #editDate></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Notas</mat-label>
+              <textarea matInput rows="2" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+          <div formGroupName="values" class="edit-grid">
+            <mat-form-field appearance="outline" *ngFor="let item of editingEntry.values | keyvalue">
+              <mat-label>{{ item.key }}</mat-label>
+              <input matInput type="number" [formControlName]="item.key" />
+            </mat-form-field>
+          </div>
+          <div class="edit-actions">
+            <button mat-stroked-button (click)="cancelEdit()">Cancelar</button>
+            <button mat-raised-button color="primary" (click)="saveEdit()">Salvar</button>
+          </div>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Comparação">
+      <section class="tab-section">
+        <mat-card>
+          <mat-card-title>Comparação entre períodos</mat-card-title>
+          <form class="comparison-grid" [formGroup]="comparisonForm">
+            <mat-form-field appearance="outline">
+              <mat-label>Métrica</mat-label>
+              <mat-select formControlName="metricKey">
+                <mat-option *ngFor="let metric of METRIC_DEFINITIONS" [value]="metric.key">
+                  {{ metric.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Início período 1</mat-label>
+              <input matInput type="date" formControlName="start1" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Fim período 1</mat-label>
+              <input matInput type="date" formControlName="end1" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Início período 2</mat-label>
+              <input matInput type="date" formControlName="start2" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Fim período 2</mat-label>
+              <input matInput type="date" formControlName="end2" />
+            </mat-form-field>
+          </form>
+          <button mat-raised-button color="primary" (click)="runComparison()">Comparar</button>
+
+          <div class="comparison-result" *ngIf="comparisonResult">
+            <h4>{{ comparisonResult.metricLabel }}</h4>
+            <p>Período 1: {{ comparisonResult.period1Average | number: '1.0-1' }}</p>
+            <p>Período 2: {{ comparisonResult.period2Average | number: '1.0-1' }}</p>
+            <p>
+              Variação: {{ comparisonResult.variationPercent | number: '1.0-1' }}%
+            </p>
+          </div>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Relatórios">
+      <section class="tab-section">
+        <div class="report-actions">
+          <button mat-raised-button color="primary" (click)="generateWeeklyReport()">
+            Gerar PDF semanal
+          </button>
+          <button mat-raised-button color="accent" (click)="generateCheckpointReport()">
+            Gerar PDF checkpoint
+          </button>
+        </div>
+
+        <section id="weekly-report" class="report">
+          <header>
+            <div>
+              <h2>Relatório Semanal</h2>
+              <p>{{ settings.squadName }}</p>
+              <p>Data: {{ (entries[0]?.date || settings.pilotStart) | date: 'dd/MM/yyyy' }}</p>
+            </div>
+            <img *ngIf="settings.logoDataUrl" [src]="settings.logoDataUrl" alt="Logo" />
+          </header>
+          <div class="report-summary">
+            <h3>Resumo Executivo</h3>
+            <p>Principais avanços e pontos de atenção da semana.</p>
+            <div class="summary-grid">
+              <div *ngFor="let kpi of kpis.slice(0, 4)">
+                <strong>{{ kpi.definition.label }}</strong>
+                <span>{{ kpi.currentValue ?? '-' }} ({{ getStatusIcon(kpi.status) }})</span>
+              </div>
+            </div>
+          </div>
+          <div class="report-section" *ngFor="let category of ['produtividade','qualidade','satisfacao','processo']">
+            <h4>{{ getCategoryLabel(category) }}</h4>
+            <ul>
+              <li *ngFor="let metric of getDefinitionsByCategory(category)">
+                {{ metric.label }}: {{ getLatestMetricValue(metric.key) ?? '-' }}
+              </li>
+            </ul>
+          </div>
+          <footer>Assinaturas: __________________________</footer>
+        </section>
+
+        <section id="checkpoint-report" class="report">
+          <header>
+            <div>
+              <h2>Relatório Checkpoint (8 semanas)</h2>
+              <p>{{ settings.squadName }}</p>
+            </div>
+          </header>
+          <div class="report-summary">
+            <h3>GO / NO-GO</h3>
+            <p>{{ getGoNoGo().status }}</p>
+            <ul>
+              <li *ngFor="let detail of getGoNoGo().details">{{ detail }}</li>
+            </ul>
+          </div>
+          <div class="report-section">
+            <h4>Tendências</h4>
+            <p>Comparativo das métricas principais versus baseline e meta.</p>
+          </div>
+          <div class="report-section">
+            <h4>Próximos passos</h4>
+            <p>Recomendações baseadas nos resultados do piloto.</p>
+          </div>
+        </section>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Configuração">
+      <section class="tab-section">
+        <div class="config-grid">
+          <mat-card>
+            <mat-card-title>Dados do squad</mat-card-title>
+            <form [formGroup]="settingsForm" class="config-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Nome do squad</mat-label>
+                <input matInput formControlName="squadName" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Início do piloto</mat-label>
+                <input matInput [matDatepicker]="pilotDate" formControlName="pilotStart" />
+                <mat-datepicker-toggle matSuffix [for]="pilotDate"></mat-datepicker-toggle>
+                <mat-datepicker #pilotDate></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Onda 1</mat-label>
+                <input matInput [matDatepicker]="wave1Date" formControlName="wave1" />
+                <mat-datepicker-toggle matSuffix [for]="wave1Date"></mat-datepicker-toggle>
+                <mat-datepicker #wave1Date></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Onda 2</mat-label>
+                <input matInput [matDatepicker]="wave2Date" formControlName="wave2" />
+                <mat-datepicker-toggle matSuffix [for]="wave2Date"></mat-datepicker-toggle>
+                <mat-datepicker #wave2Date></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Onda 3</mat-label>
+                <input matInput [matDatepicker]="wave3Date" formControlName="wave3" />
+                <mat-datepicker-toggle matSuffix [for]="wave3Date"></mat-datepicker-toggle>
+                <mat-datepicker #wave3Date></mat-datepicker>
+              </mat-form-field>
+            </form>
+            <div class="logo-upload">
+              <label class="btn btn-ghost">
+                Upload logo
+                <input type="file" accept="image/*" (change)="onLogoSelected($event)" />
+              </label>
+            </div>
+            <button mat-raised-button color="primary" (click)="saveSettings()">Salvar</button>
+          </mat-card>
+
+          <mat-card>
+            <mat-card-title>Radar de maturidade</mat-card-title>
+            <form [formGroup]="radarForm" class="radar-grid">
+              <div class="radar-row" *ngFor="let dimension of RADAR_DIMENSIONS">
+                <h4>{{ dimension }}</h4>
+                <mat-form-field appearance="outline">
+                  <mat-label>Baseline</mat-label>
+                  <input matInput type="number" [formControlName]="dimension + '_baseline'" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Atual</mat-label>
+                  <input matInput type="number" [formControlName]="dimension + '_current'" />
+                </mat-form-field>
+              </div>
+            </form>
+            <button mat-raised-button color="primary" (click)="saveRadar()">Salvar radar</button>
+          </mat-card>
+
+          <mat-card>
+            <mat-card-title>ROI</mat-card-title>
+            <form [formGroup]="roiForm" class="roi-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Custos da disfunção</mat-label>
+                <input matInput type="number" formControlName="dysfunctionCosts" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ganhos projetados</mat-label>
+                <input matInput type="number" formControlName="projectedGains" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Investimento necessário</mat-label>
+                <input matInput type="number" formControlName="investment" />
+              </mat-form-field>
+            </form>
+            <button mat-raised-button color="primary" (click)="saveRoi()">Salvar ROI</button>
+          </mat-card>
+        </div>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="Apresentação">
+      <section class="tab-section">
+        <div class="slides" id="slides-container">
+          <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlideIndex">
+            <h2>{{ slide.title }}</h2>
+            <p>{{ slide.subtitle }}</p>
+            <div class="slide-content" *ngIf="slide.key === 'summary'">
+              <div class="summary-grid">
+                <div *ngFor="let kpi of kpis.slice(0, 6)">
+                  <strong>{{ kpi.definition.label }}</strong>
+                  <span>{{ kpi.currentValue ?? '-' }} ({{ getStatusIcon(kpi.status) }})</span>
+                </div>
+              </div>
+            </div>
+            <div class="slide-content" *ngIf="slide.key === 'roi'">
+              <p>ROI projetado: {{ getRoiValue() | number: '1.0-1' }}%</p>
+            </div>
+            <div class="slide-content" *ngIf="slide.key === 'recomendacoes'">
+              <p>{{ getGoNoGo().status }}</p>
+              <ul>
+                <li *ngFor="let detail of getGoNoGo().details">{{ detail }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slides-controls">
+          <button mat-stroked-button (click)="previousSlide()">←</button>
+          <button mat-stroked-button (click)="nextSlide()">→</button>
+          <button mat-raised-button color="primary" (click)="enterFullscreen()">Tela cheia</button>
+        </div>
+      </section>
+    </mat-tab>
+  </mat-tab-group>
+</main>

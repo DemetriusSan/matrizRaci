@@ -1,0 +1,217 @@
+<div class="permutation-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <button mat-icon-button routerLink="/home" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-text">
+        <h1>Gerador de Permutações de Teste</h1>
+        <p>Crie todas as combinações possíveis para testes de equivalência</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Actions Bar -->
+  <div class="actions-bar">
+    <button mat-raised-button color="accent" (click)="loadExample()">
+      <mat-icon>lightbulb</mat-icon>
+      Carregar Exemplo
+    </button>
+    <button mat-raised-button color="warn" (click)="resetForm()">
+      <mat-icon>refresh</mat-icon>
+      Limpar Tudo
+    </button>
+  </div>
+
+  <!-- Errors Display -->
+  <mat-card class="errors-card" *ngIf="errors.length > 0">
+    <mat-card-header>
+      <mat-icon color="warn">error</mat-icon>
+      <mat-card-title>Erros de Validação</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ul class="error-list">
+        <li *ngFor="let error of errors">{{ error }}</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+
+    <!-- Input Variables Section -->
+    <mat-card class="variables-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>input</mat-icon>
+          Variáveis de Entrada
+        </mat-card-title>
+        <mat-card-subtitle>
+          Uma linha por variável: Nome; Partição1; Partição2; ...
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width-textarea">
+          <mat-label>Digite as variáveis de entrada</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="inputText"
+            rows="8"
+            placeholder="Exemplo:&#10;Valor; 5; 10; 100&#10;Limite; 1000; 5000; 10000&#10;Token; false; true"></textarea>
+          <mat-hint>Cada linha representa uma variável. Use ponto e vírgula (;) para separar o nome das partições.</mat-hint>
+        </mat-form-field>
+
+        <div class="format-example">
+          <h4><mat-icon>info</mat-icon> Formato:</h4>
+          <code>
+            Linha 1: &lt;Nome da Variável&gt;; &lt;Partição 1&gt;; &lt;Partição 2&gt;; &lt;Partição N&gt;<br>
+            Linha 2: &lt;Nome da Variável&gt;; &lt;Partição 1&gt;; &lt;Partição 2&gt;; &lt;Partição N&gt;
+          </code>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Output Variables Section -->
+    <mat-card class="variables-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>output</mat-icon>
+          Variáveis de Saída
+        </mat-card-title>
+        <mat-card-subtitle>
+          Uma linha por variável: Nome; Partição1; Partição2; ...
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width-textarea">
+          <mat-label>Digite as variáveis de saída</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="outputText"
+            rows="8"
+            placeholder="Exemplo:&#10;Resultado; Aceito; Rejeitado&#10;Status; Válido; Inválido"></textarea>
+          <mat-hint>Cada linha representa uma variável de saída esperada. Use ponto e vírgula (;) para separar o nome das partições.</mat-hint>
+        </mat-form-field>
+
+        <div class="format-example">
+          <h4><mat-icon>info</mat-icon> Formato:</h4>
+          <code>
+            Linha 1: &lt;Nome da Saída&gt;; &lt;Partição 1&gt;; &lt;Partição 2&gt;; &lt;Partição N&gt;<br>
+            Linha 2: &lt;Nome da Saída&gt;; &lt;Partição 1&gt;; &lt;Partição 2&gt;; &lt;Partição N&gt;
+          </code>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Generate Button -->
+  <div class="generate-section">
+    <button mat-raised-button color="primary" (click)="generatePermutations()" class="generate-btn">
+      <mat-icon>shuffle</mat-icon>
+      Gerar Permutações
+    </button>
+    <p class="combinations-info" *ngIf="totalCombinations > 0">
+      Total de combinações: <strong>{{ totalCombinations }}</strong>
+    </p>
+  </div>
+
+  <!-- Results Section -->
+  <mat-card class="results-card" *ngIf="showResults">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>table_chart</mat-icon>
+        Resultados das Permutações
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ results.length }} casos de teste gerados
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Export Buttons -->
+      <div class="export-actions">
+        <button mat-raised-button color="accent" (click)="exportToExcel()">
+          <mat-icon>description</mat-icon>
+          Exportar para Excel
+        </button>
+        <button mat-raised-button color="accent" (click)="exportToJson()">
+          <mat-icon>code</mat-icon>
+          Exportar para JSON
+        </button>
+      </div>
+
+      <!-- Editing Info -->
+      <div class="info-banner">
+        <mat-icon>info</mat-icon>
+        <p>
+          <strong>Edição Manual:</strong> Clique nas células de resultado esperado para alterá-las manualmente.
+          Útil para casos de exceção definidos pelo PO (ex: quando <em>Limite &lt; 5000</em> não precisa token,
+          mas se o usuário enviou, pode rejeitar a transação).
+        </p>
+      </div>
+
+      <!-- Results Table -->
+      <div class="table-container">
+        <table mat-table [dataSource]="results" class="results-table">
+
+          <!-- Dynamic Columns -->
+          <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef class="table-header">
+              {{ column === 'id' ? 'ID' :
+                 column.startsWith('esperado_') ? 'Esperado: ' + column.replace('esperado_', '') :
+                 column }}
+            </th>
+            <td mat-cell *matCellDef="let result"
+                [class.highlight-cell]="column.startsWith('esperado_')"
+                [class.editable-cell]="isOutputColumn(column)"
+                [class.manually-edited]="isCellManuallyEdited(result, column)">
+
+              <!-- Modo de Visualização -->
+              <div *ngIf="!isEditing(result, column)" class="cell-content">
+                <span class="cell-value"
+                      (click)="isOutputColumn(column) && startEdit(result, column)"
+                      [class.clickable]="isOutputColumn(column)">
+                  {{ getCellValue(result, column) }}
+                </span>
+                <mat-icon *ngIf="isCellManuallyEdited(result, column)"
+                          class="edit-indicator"
+                          matTooltip="Editado manualmente pelo PO">
+                  edit
+                </mat-icon>
+              </div>
+
+              <!-- Modo de Edição -->
+              <div *ngIf="isEditing(result, column)" class="cell-edit-mode">
+                <select [(ngModel)]="editingValue" class="edit-select">
+                  <option *ngFor="let option of getAvailableOptions(column)" [value]="option">
+                    {{ option }}
+                  </option>
+                </select>
+                <div class="edit-actions">
+                  <button mat-icon-button color="primary"
+                          (click)="saveEdit(result, column)"
+                          matTooltip="Salvar"
+                          class="save-btn">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn"
+                          (click)="cancelEdit()"
+                          matTooltip="Cancelar"
+                          class="cancel-btn">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
