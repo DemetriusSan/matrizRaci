@@ -4,16 +4,21 @@
     <span></span>
     <span></span>
   </button>
-  <div class="navbar-brand">
-    <span class="logo-mark">◆</span>
+  <a class="navbar-brand" routerLink="/" (click)="closeMenu()">
+    <img class="logo-mark" src="/DeSanKnowlogy.png" alt="DeSan Knowlogy" />
     <div class="logo-text">
-      <span class="logo-name">DeSan-Qualit</span>
-      <span class="logo-subtitle">knowlogy</span>
+      <span class="logo-name">DeSan-Quality</span>
+      <span class="logo-subtitle">Knowlogy</span>
     </div>
-  </div>
+  </a>
   <div class="menu" [class.open]="menuOpen">
     <a routerLink="/" (click)="closeMenu()">Home</a>
-    <a routerLink="/raci" (click)="closeMenu()">Matriz RACI</a>
+    <div class="menu-group">
+      <div class="menu-title">Ferramentas de Qualidade</div>
+      <a routerLink="/raci" (click)="closeMenu()">Matriz RACI</a>
+      <a routerLink="/bpmn" (click)="closeMenu()">BPMN</a>
+      <a routerLink="/metricas" (click)="closeMenu()">Métricas Ágeis</a>
+    </div>
     <a routerLink="/tutorial" (click)="closeMenu()">Tutorial RACI</a>
   </div>
 </nav>
