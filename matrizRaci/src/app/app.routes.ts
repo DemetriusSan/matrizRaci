@@ -5,6 +5,8 @@ import { Home } from './features/home/home';
 import { Microfocus } from './features/microfocus/microfocus';
 import { BpmnEditor } from './features/bpmn/bpmn';
 import { BpmnLearn } from './features/bpmn/bpmn-learn';
+import { AgileMetricsComponent } from './features/agile-metrics/agile-metrics';
+import { PermutationTestComponent } from './features/permutation-test/permutation-test';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -12,5 +14,7 @@ export const routes: Routes = [
   { path: 'raci', component: RACIMatrixComponent },
   { path: 'bpmn', component: BpmnEditor },
   { path: 'bpmn/aprender', component: BpmnLearn },
-  { path: 'tutorial', component: Tutorial }
+  { path: 'tutorial', component: Tutorial },
+  { path: 'metricas', component: AgileMetricsComponent },
+  { path: 'permutacao', component: PermutationTestComponent }
 ];

@@ -15,6 +15,81 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import { Canvg } from 'canvg';
 import resizeModule from 'diagram-js/lib/features/resize';
 import RuleProvider from 'diagram-js/lib/features/rules/RuleProvider';
+import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
+import { append as svgAppend, create as svgCreate, attr as svgAttr } from 'tiny-svg';
+
+class TextBoxPaletteProvider {
+  static $inject = ['palette', 'create', 'elementFactory', 'translate'];
+
+  constructor(
+    private palette: any,
+    private create: any,
+    private elementFactory: any,
+    private translate: any
+  ) {
+    this.palette.registerProvider(this);
+  }
+
+  getPaletteEntries() {
+    return {
+      'create.text-annotation-custom': {
+        group: 'tools',
+        className: 'custom-textbox',
+        title: this.translate('Caixa de texto'),
+        action: {
+          dragstart: (event: any) => this.createText(event),
+          click: (event: any) => this.createText(event),
+        },
+      },
+    };
+  }
+
+  private createText(event: any): void {
+    const shape = this.elementFactory.createShape({
+      type: 'bpmn:TextAnnotation',
+      width: 180,
+      height: 80,
+    });
+    this.create.start(event, shape);
+  }
+}
+
+class TextBoxRenderer extends BaseRenderer {
+  static $inject = ['eventBus'];
+
+  constructor(eventBus: any) {
+    super(eventBus, 2000);
+  }
+
+  override canRender(element: any): boolean {
+    return element?.type === 'bpmn:TextAnnotation';
+  }
+
+  override drawShape(parentNode: any, element: any): any {
+    const width = element.width || 180;
+    const height = element.height || 80;
+    const rect = svgCreate('rect');
+    svgAttr(rect, {
+      x: 0,
+      y: 0,
+      width,
+      height,
+      rx: 6,
+      ry: 6,
+      fill: 'transparent',
+      stroke: 'transparent',
+      strokeWidth: 0,
+    });
+    svgAppend(parentNode, rect);
+    return rect;
+  }
+
+  override getShapePath(shape: any): string {
+    const width = shape.width || 180;
+    const height = shape.height || 80;
+    return `M0 0 L${width} 0 L${width} ${height} L0 ${height} Z`;
+  }
+}
 
 class AllowResizeRules extends RuleProvider {
   static override $inject = ['eventBus'];
@@ -31,6 +106,16 @@ class AllowResizeRules extends RuleProvider {
 const allowResizeModule = {
   __init__: ['allowResizeRules'],
   allowResizeRules: ['type', AllowResizeRules],
+};
+
+const customPaletteModule = {
+  __init__: ['textBoxPaletteProvider'],
+  textBoxPaletteProvider: ['type', TextBoxPaletteProvider],
+};
+
+const customTextBoxRenderModule = {
+  __init__: ['textBoxRenderer'],
+  textBoxRenderer: ['type', TextBoxRenderer],
 };
 
 @Component({
@@ -99,7 +184,12 @@ export class BpmnEditor implements AfterViewInit, OnDestroy {
     try {
       this.modeler = new Modeler({
         container,
-        additionalModules: [resizeModule, allowResizeModule],
+        additionalModules: [
+          resizeModule,
+          allowResizeModule,
+          customPaletteModule,
+          customTextBoxRenderModule,
+        ],
         keyboard: {
           bindTo: window,
         },

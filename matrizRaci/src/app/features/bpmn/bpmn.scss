@@ -173,6 +173,50 @@ h1 {
   transform-origin: top left;
 }
 
+.canvas .djs-palette .entry.custom-textbox {
+  position: relative;
+  border: 1px dashed #0f172a;
+  border-radius: 6px;
+  background: #f8fafc;
+  opacity: 1 !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.1);
+}
+
+.canvas .djs-palette .entry.custom-textbox::before {
+  content: "TXT";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+.canvas .djs-palette .entry.custom-textbox::after {
+  content: "Texto";
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #0f172a;
+  background: #f8fafc;
+  padding: 1px 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  white-space: nowrap;
+}
+
+.canvas .bpmn-icon-text-annotation .djs-label {
+  transform: translate(8px, 16px);
+  text-anchor: start;
+  dominant-baseline: hanging;
+}
+
 .canvas .djs-palette .djs-palette-entries {
   display: block !important;
 }
