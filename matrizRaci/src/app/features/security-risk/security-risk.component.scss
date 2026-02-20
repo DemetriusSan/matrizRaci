@@ -1,0 +1,241 @@
+$primary: #1a3a5c;
+$accent: #2196F3;
+$danger: #dc3545;
+$success: #28a745;
+$border: #dee2e6;
+$bg: #f0f4f8;
+$radius: 10px;
+$shadow: 0 2px 12px rgba(0,0,0,0.09);
+
+// ── Shell ─────────────────────────────────────────────────────────────
+.srm-shell {
+  min-height: 100vh;
+  background: $bg;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Nav ───────────────────────────────────────────────────────────────
+.srm-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+  background: $primary;
+  color: white;
+  height: 58px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  .nav-icon  { font-size: 1.3rem; }
+  .nav-title { font-size: 1rem; font-weight: 700; white-space: nowrap; letter-spacing: 0.01em; }
+}
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover  { background: rgba(255,255,255,0.1); color: white; }
+    &.active { background: rgba(255,255,255,0.18); color: white; border-color: rgba(255,255,255,0.3); }
+  }
+}
+.count-badge {
+  background: rgba(255,255,255,0.25);
+  padding: 1px 7px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.btn-new {
+  padding: 7px 18px;
+  background: $accent;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  &:hover { background: #1565C0; }
+}
+
+// ── Content ───────────────────────────────────────────────────────────
+.srm-content { flex: 1; overflow-y: auto; }
+
+// ── List View ─────────────────────────────────────────────────────────
+.list-view { padding: 24px; }
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  h2 { font-size: 1.2rem; color: $primary; margin: 0; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  .empty-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+  p { color: #888; font-size: 1rem; margin-bottom: 16px; }
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.analysis-card {
+  background: white;
+  border: 1px solid $border;
+  border-left: 5px solid $accent;
+  border-radius: $radius;
+  padding: 18px;
+  box-shadow: $shadow;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+  &.critical-card { box-shadow: 0 0 0 2px rgba(220,53,69,0.3), $shadow; }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.card-id-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  .card-icon { font-size: 1.4rem; }
+}
+.card-story-id { font-weight: 800; color: $primary; display: block; font-size: 0.9rem; }
+.card-sprint   { font-size: 0.75rem; color: #888; }
+
+.risk-pill {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.card-feature  { font-size: 0.95rem; font-weight: 700; color: #333; margin: 0 0 6px; }
+.card-endpoint {
+  font-size: 0.8rem;
+  color: #666;
+  font-family: monospace;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.method-badge {
+  background: #e3f2fd;
+  color: $accent;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.card-systems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.sys-tag {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 20px;
+  color: #555;
+}
+.card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.stat { padding: 2px 0; }
+.vuln-stat    { color: $danger; }
+.ok-stat      { color: $success; }
+.debt-stat    { color: #7b1fa2; }
+.pentest-stat { color: #d32f2f; }
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid $border;
+  padding-top: 10px;
+}
+.btn-action {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid $border;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover { background: $bg; }
+  &.primary { background: $accent; color: white; border-color: $accent; &:hover { background: #1565C0; } }
+  &.danger  { color: $danger; border-color: $danger; &:hover { background: #ffebee; } }
+}
+
+// ── Checklist View ────────────────────────────────────────────────────
+.checklist-view { padding: 0; }
+.back-bar {
+  padding: 12px 24px;
+  background: white;
+  border-bottom: 1px solid $border;
+}
+.btn-back {
+  background: none;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  color: $primary;
+  font-weight: 600;
+  transition: all 0.15s;
+  &:hover { background: $bg; }
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────
+.btn-primary {
+  padding: 8px 20px;
+  background: $accent;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: #1565C0; }
+}

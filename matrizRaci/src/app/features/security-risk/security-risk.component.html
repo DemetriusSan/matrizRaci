@@ -1,0 +1,126 @@
+<div class="srm-shell">
+
+  <!-- ── NAV BAR DO MÓDULO ─────────────────────────────────────────────── -->
+  <nav class="srm-nav">
+    <div class="nav-brand">
+      <span class="nav-icon">🛡️</span>
+      <span class="nav-title">Security Risk Management</span>
+    </div>
+    <div class="nav-tabs">
+      <button [class.active]="currentView === 'dashboard'" (click)="goTo('dashboard')">
+        📊 Dashboard
+      </button>
+      <button [class.active]="currentView === 'list'" (click)="goTo('list')">
+        📋 Análises
+        <span class="count-badge">{{ analyses.length }}</span>
+      </button>
+    </div>
+    <button class="btn-new" (click)="openNew()">
+      + Nova Análise
+    </button>
+  </nav>
+
+  <!-- ── CONTEÚDO ──────────────────────────────────────────────────────── -->
+  <main class="srm-content">
+
+    <!-- DASHBOARD -->
+    @if (currentView === 'dashboard') {
+      <app-dashboard></app-dashboard>
+    }
+
+    <!-- LISTA DE ANÁLISES -->
+    @if (currentView === 'list') {
+      <div class="list-view">
+        <div class="list-header">
+          <h2>📋 Análises de Segurança</h2>
+          <button class="btn-primary" (click)="openNew()">+ Nova Análise</button>
+        </div>
+
+        @if (analyses.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">🔒</span>
+            <p>Nenhuma análise cadastrada ainda.</p>
+            <button class="btn-primary" (click)="openNew()">Criar primeira análise</button>
+          </div>
+        }
+
+        <div class="analysis-grid">
+          @for (analysis of analyses; track analysis.id) {
+            <div class="analysis-card"
+                 [class.critical-card]="isCritical(analysis)"
+                 [style.border-left-color]="getRiskColor(analysis)">
+
+              <div class="card-header">
+                <div class="card-id-area">
+                  <span class="card-icon">{{ getRiskIcon(analysis) }}</span>
+                  <div>
+                    <span class="card-story-id">{{ analysis.userStoryId }}</span>
+                    <span class="card-sprint">{{ analysis.sprint }}</span>
+                  </div>
+                </div>
+                @if (analysis.riskAssessment) {
+                  <div class="risk-pill" [style.background]="getRiskColor(analysis)">
+                    {{ analysis.riskAssessment.riskLevel }} · {{ analysis.riskAssessment.riskScore }}/100
+                  </div>
+                }
+              </div>
+
+              <h3 class="card-feature">{{ analysis.featureName }}</h3>
+              <p class="card-endpoint">
+                <span class="method-badge">{{ analysis.apiSurface.method }}</span>
+                {{ analysis.apiSurface.endpoint }}
+              </p>
+
+              <div class="card-systems">
+                @for (sys of analysis.systemsImpacted; track sys) {
+                  <span class="sys-tag">{{ sys }}</span>
+                }
+              </div>
+
+              <div class="card-stats">
+                <span class="stat vuln-stat">⚠️ {{ countVulns(analysis) }} vulns</span>
+                <span class="stat ok-stat">✅ {{ countApproved(analysis) }} aprovados</span>
+                @if (analysis.hasSecurityDebt) { <span class="stat debt-stat">🏦 Debt</span> }
+                @if (analysis.requiresPentest) { <span class="stat pentest-stat">🔍 Pentest</span> }
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-action primary" (click)="openChecklist(analysis.id)">
+                  Ver Checklist
+                </button>
+                <button class="btn-action" (click)="openEdit(analysis.id)">
+                  ✏️ Editar
+                </button>
+                <button class="btn-action" (click)="downloadReport(analysis.id, $event)">
+                  ⬇️ JSON
+                </button>
+                <button class="btn-action danger" (click)="deleteAnalysis(analysis.id, $event)">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- FORMULÁRIO DE CRIAÇÃO/EDIÇÃO -->
+    @if (currentView === 'form') {
+      <app-analysis-form
+        [analysisId]="editingAnalysisId"
+        (saved)="onFormSaved($event)"
+        (canceled)="onFormCanceled()">
+      </app-analysis-form>
+    }
+
+    <!-- CHECKLIST DETALHADO -->
+    @if (currentView === 'checklist' && selectedAnalysisId) {
+      <div class="checklist-view">
+        <div class="back-bar">
+          <button class="btn-back" (click)="goTo('list')">← Voltar para Lista</button>
+        </div>
+        <app-checklist [analysisId]="selectedAnalysisId"></app-checklist>
+      </div>
+    }
+  </main>
+</div>

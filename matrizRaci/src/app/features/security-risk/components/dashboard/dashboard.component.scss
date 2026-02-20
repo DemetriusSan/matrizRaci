@@ -1,0 +1,259 @@
+$primary: #1a3a5c;
+$accent: #2196F3;
+$danger: #dc3545;
+$success: #28a745;
+$warning: #ffc107;
+$border: #dee2e6;
+$bg: #f8f9fa;
+$radius: 10px;
+$shadow: 0 2px 12px rgba(0,0,0,0.09);
+
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  h2 { font-size: 1.4rem; color: $primary; margin: 0 0 4px; }
+  .subtitle { color: #7c8b9b; font-size: 0.88rem; }
+}
+.btn-export {
+  padding: 10px 20px;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: $radius;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: #0f2640; }
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: white;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: $shadow;
+  transition: transform 0.15s;
+  &:hover { transform: translateY(-2px); }
+  &.critical { border-top: 3px solid $danger; }
+  &.high     { border-top: 3px solid #fd7e14; }
+  &.score    { border-top: 3px solid $accent; }
+  &.vuln     { border-top: 3px solid $warning; }
+  .kpi-icon  { font-size: 1.8rem; }
+}
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+  .kpi-value { font-size: 1.8rem; font-weight: 800; color: $primary; line-height: 1; }
+  .kpi-label { font-size: 0.78rem; color: #777; margin-top: 2px; }
+}
+
+// ── Charts Row ─────────────────────────────────────────────────────────
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.chart-card {
+  background: white;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 20px;
+  box-shadow: $shadow;
+  h3 {
+    font-size: 0.95rem;
+    color: $primary;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+  }
+}
+.empty-chart {
+  text-align: center;
+  padding: 30px;
+  color: $success;
+  font-weight: 600;
+}
+
+// ── Bar Chart ──────────────────────────────────────────────────────────
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-label {
+  min-width: 70px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #444;
+  &.small { font-size: 0.75rem; min-width: 140px; }
+}
+.bar-track {
+  flex: 1;
+  height: 20px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+.bar-val {
+  min-width: 24px;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #333;
+}
+
+// ── Status Distribution ────────────────────────────────────────────────
+.status-bars { display: flex; flex-direction: column; gap: 12px; }
+.status-bar-item {
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .status-name  { font-size: 0.85rem; font-weight: 600; }
+  .status-count { font-size: 0.85rem; font-weight: 700; color: #333; }
+}
+
+// ── Sprint Chart (vertical bars) ──────────────────────────────────────
+.sprint-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 160px;
+  padding-bottom: 30px;
+}
+.sprint-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+.sprint-bar-wrapper {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.sprint-bar {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  transition: height 0.4s ease;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 20px;
+}
+.sprint-score {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding-top: 4px;
+}
+.sprint-name {
+  font-size: 0.72rem;
+  color: $primary;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 4px;
+}
+.sprint-count {
+  font-size: 0.68rem;
+  color: #888;
+  text-align: center;
+}
+
+// ── Critical Stories ──────────────────────────────────────────────────
+.critical-stories {
+  margin-top: 8px;
+  h3 { font-size: 1rem; color: $danger; margin-bottom: 14px; }
+}
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.story-card {
+  background: white;
+  border: 1px solid $border;
+  border-left: 4px solid $danger;
+  border-radius: $radius;
+  padding: 16px;
+  box-shadow: $shadow;
+}
+.story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.story-id { font-weight: 800; color: $primary; font-size: 0.9rem; }
+.story-risk { font-size: 0.82rem; font-weight: 700; }
+.story-name { font-size: 0.9rem; font-weight: 600; color: #333; margin: 0 0 4px; }
+.story-sprint { font-size: 0.78rem; color: #888; margin: 0 0 8px; }
+.story-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.badge-sm {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  &.pentest { background: #ffebee; color: $danger; }
+  &.threat  { background: #e8f5e9; color: #2e7d32; }
+  &.debt    { background: #f3e5f5; color: #7b1fa2; }
+}
+.findings-mini {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    font-size: 0.75rem;
+    color: #555;
+    padding: 2px 0;
+    &::before { content: '• '; color: $danger; font-weight: 700; }
+  }
+}
+
+.dash-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 1.1rem;
+  color: #888;
+}

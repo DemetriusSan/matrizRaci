@@ -1,0 +1,164 @@
+<div class="form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode ? '✏️ Editar Análise de Segurança' : '🛡️ Nova Análise de Segurança' }}</h2>
+    <p class="subtitle">Cadastro de análise de risco por User Story — Sistema Financeiro</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+    <!-- ── SEÇÃO 1: Dados da User Story ─────────────────────────────── -->
+    <section class="form-section">
+      <h3>📋 User Story</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ID da User Story *</label>
+          <input formControlName="userStoryId" placeholder="Ex: US-4521" />
+          <span class="error" *ngIf="hasError('userStoryId', 'required')">Campo obrigatório</span>
+          <span class="error" *ngIf="hasError('userStoryId', 'pattern')">Formato: US-[número] (ex: US-1234)</span>
+        </div>
+        <div class="form-group">
+          <label>Nome da Funcionalidade *</label>
+          <input formControlName="featureName" placeholder="Ex: Transferência PIX" />
+          <span class="error" *ngIf="hasError('featureName', 'required')">Campo obrigatório</span>
+        </div>
+        <div class="form-group">
+          <label>Sprint *</label>
+          <input formControlName="sprint" placeholder="Ex: Sprint 15" />
+          <span class="error" *ngIf="hasError('sprint', 'required')">Campo obrigatório</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Sistemas Impactados *</label>
+        <div class="checkbox-group">
+          @for (sys of systemOptions; track sys) {
+            <label class="checkbox-label">
+              <input type="checkbox"
+                     [checked]="isSystemSelected(sys)"
+                     (change)="onSystemToggle(sys, $any($event.target).checked)" />
+              {{ sys }}
+            </label>
+          }
+        </div>
+        <span class="error" *ngIf="form.get('systemsImpacted')?.touched && !form.get('systemsImpacted')?.value?.length">
+          Selecione ao menos um sistema
+        </span>
+      </div>
+    </section>
+
+    <!-- ── SEÇÃO 2: API REST ─────────────────────────────────────────── -->
+    <section class="form-section">
+      <h3>🔌 Endpoint REST</h3>
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label>Endpoint *</label>
+          <input formControlName="endpoint" placeholder="Ex: /api/v1/pix/transfer" />
+          <span class="error" *ngIf="hasError('endpoint', 'required')">Campo obrigatório</span>
+          <span class="error" *ngIf="hasError('endpoint', 'pattern')">Deve iniciar com '/'</span>
+        </div>
+        <div class="form-group">
+          <label>Método HTTP *</label>
+          <select formControlName="method">
+            @for (m of methodOptions; track m) {
+              <option [value]="m">{{ m }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sensibilidade dos Dados *</label>
+          <select formControlName="dataSensitivity">
+            @for (s of sensitOptions; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Autenticação</label>
+          <select formControlName="authType">
+            @for (a of authOptions; track a) {
+              <option [value]="a">{{ a }}</option>
+            }
+          </select>
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-label">
+            <input type="checkbox" formControlName="requiresAuth" />
+            <span>Possui Autenticação?</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" formControlName="requiresRoleAuthorization" />
+            <span>Autorização por Perfil?</span>
+          </label>
+          <label class="toggle-label highlight-financial">
+            <input type="checkbox" formControlName="movesFinancialValue" />
+            <span>💰 Movimenta Valor Financeiro?</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SEÇÃO 3: Integração MQ ─────────────────────────────────────── -->
+    <section class="form-section mq-section">
+      <h3>📨 Integração Fila MQ → Mainframe</h3>
+      <div class="mq-grid">
+        <label class="toggle-label">
+          <input type="checkbox" formControlName="checksMessageIntegrity" />
+          <span>Verifica Integridade da Mensagem (HMAC/Assinatura)</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" formControlName="checksSchemaOnMainframeEntry" />
+          <span>Validação de Schema na Entrada do Mainframe</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" formControlName="hasIdempotencyKey" />
+          <span>Possui Chave de Idempotência</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" formControlName="hasReplayProtection" />
+          <span>Proteção contra Replay Attack</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" formControlName="hasDeadLetterQueue" />
+          <span>Dead Letter Queue Configurada</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ── SEÇÃO 4: Extras Estratégicos ─────────────────────────────── -->
+    <section class="form-section strategic-section">
+      <h3>🎯 Extras Estratégicos</h3>
+      <div class="toggle-row">
+        <label class="toggle-label badge-debt">
+          <input type="checkbox" formControlName="hasSecurityDebt" />
+          <span>🏦 Security Debt</span>
+        </label>
+        <label class="toggle-label badge-pentest">
+          <input type="checkbox" formControlName="requiresPentest" />
+          <span>🔍 Requer Pentest?</span>
+        </label>
+        <label class="toggle-label badge-threat">
+          <input type="checkbox" formControlName="requiresThreatModeling" />
+          <span>🧠 Requer Threat Modeling?</span>
+        </label>
+      </div>
+      <div class="form-group mt-2">
+        <label>Observações</label>
+        <textarea formControlName="notes" rows="3"
+          placeholder="Contexto adicional, decisões de arquitetura, dependências..."></textarea>
+      </div>
+    </section>
+
+    <!-- ── AÇÕES ─────────────────────────────────────────────────────── -->
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="cancel()" [disabled]="isSaving">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="isSaving">
+        {{ isSaving ? 'Salvando...' : (isEditMode ? 'Atualizar' : '🛡️ Criar Análise') }}
+      </button>
+    </div>
+  </form>
+</div>
