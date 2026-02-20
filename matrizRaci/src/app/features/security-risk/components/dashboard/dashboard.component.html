@@ -1,0 +1,194 @@
+<div class="dashboard" *ngIf="!loading && data; else loadingTpl">
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+  <div class="dash-header">
+    <div>
+      <h2>📊 Dashboard Executivo — Security Risk</h2>
+      <p class="subtitle">Visão consolidada de riscos de segurança por sprint · Sistema Financeiro</p>
+    </div>
+    <button class="btn-export" (click)="downloadFullReport()">
+      ⬇️ Exportar Relatório JSON
+    </button>
+  </div>
+
+  <!-- ── KPIs PRINCIPAIS ────────────────────────────────────────────────── -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <span class="kpi-icon">📋</span>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ data.totalAnalyses }}</span>
+        <span class="kpi-label">Histórias Analisadas</span>
+      </div>
+    </div>
+    <div class="kpi-card critical">
+      <span class="kpi-icon">🔴</span>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ data.criticalRiskCount }}</span>
+        <span class="kpi-label">Risco Crítico</span>
+      </div>
+    </div>
+    <div class="kpi-card high">
+      <span class="kpi-icon">🟠</span>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ data.highRiskCount }}</span>
+        <span class="kpi-label">Risco Alto</span>
+      </div>
+    </div>
+    <div class="kpi-card score">
+      <span class="kpi-icon">⚡</span>
+      <div class="kpi-info">
+        <span class="kpi-value" [style.color]="scoreColor(data.averageRiskScore)">
+          {{ data.averageRiskScore }}
+        </span>
+        <span class="kpi-label">Score Médio de Risco</span>
+      </div>
+    </div>
+    <div class="kpi-card vuln">
+      <span class="kpi-icon">⚠️</span>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ data.vulnerabilitiesBySeverity['Crítica'] || 0 }}</span>
+        <span class="kpi-label">Vulns. Críticas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LINHA 2: GRÁFICOS ─────────────────────────────────────────────── -->
+  <div class="charts-row">
+
+    <!-- Vulns por Severidade (donut CSS) -->
+    <div class="chart-card">
+      <h3>Vulnerabilidades por Severidade</h3>
+      @if (severityEntries().length === 0) {
+        <div class="empty-chart">✅ Sem vulnerabilidades detectadas</div>
+      } @else {
+        <div class="bar-chart">
+          @for (entry of severityEntries(); track entry.key) {
+            <div class="bar-row">
+              <span class="bar-label">{{ entry.key }}</span>
+              <div class="bar-track">
+                <div class="bar-fill"
+                     [style.width.%]="(entry.value / (data.vulnerabilitiesBySeverity['Crítica'] + data.vulnerabilitiesBySeverity['Alta'] + data.vulnerabilitiesBySeverity['Média'] + data.vulnerabilitiesBySeverity['Baixa']) || 1) * 100"
+                     [style.background]="severityColors[entry.key]">
+                </div>
+              </div>
+              <span class="bar-val">{{ entry.value }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Vulns por Categoria -->
+    <div class="chart-card">
+      <h3>Vulnerabilidades por Categoria</h3>
+      @if (categoryEntries().length === 0) {
+        <div class="empty-chart">✅ Sem vulnerabilidades por categoria</div>
+      } @else {
+        <div class="bar-chart">
+          @for (entry of categoryEntries(); track entry.key) {
+            <div class="bar-row">
+              <span class="bar-label small">{{ entry.key }}</span>
+              <div class="bar-track">
+                <div class="bar-fill"
+                     [style.width.%]="(entry.value / maxCategoryValue()) * 100"
+                     style="background: #2196F3;">
+                </div>
+              </div>
+              <span class="bar-val">{{ entry.value }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Status do checklist (donut visual) -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Distribuição de Status do Checklist</h3>
+      <div class="status-bars">
+        @for (entry of statusEntries(); track entry.key) {
+          <div class="status-bar-item">
+            <div class="status-header">
+              <span class="status-name" [style.color]="statusColor(entry.key)">{{ entry.key }}</span>
+              <span class="status-count">{{ entry.value }}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill"
+                   [style.width.%]="(entry.value / totalChecklistItems()) * 100"
+                   [style.background]="statusColor(entry.key)">
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Score médio por Sprint -->
+    @if (data.scoreBySprintData.length > 0) {
+      <div class="chart-card">
+        <h3>Score Médio de Risco por Sprint</h3>
+        <div class="sprint-chart">
+          @for (sprint of data.scoreBySprintData; track sprint.sprint) {
+            <div class="sprint-col">
+              <div class="sprint-bar-wrapper">
+                <div class="sprint-bar"
+                     [style.height.%]="(sprint.averageScore / 100) * 100"
+                     [style.background]="scoreColor(sprint.averageScore)">
+                  <span class="sprint-score">{{ sprint.averageScore }}</span>
+                </div>
+              </div>
+              <span class="sprint-name">{{ sprint.sprint }}</span>
+              <span class="sprint-count">{{ sprint.analysisCount }} análises</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── HISTÓRIAS COM RISCO CRÍTICO ────────────────────────────────────── -->
+  @if (data.criticalStories.length > 0) {
+    <div class="critical-stories">
+      <h3>🔴 Histórias com Risco Crítico</h3>
+      <div class="stories-grid">
+        @for (story of data.criticalStories; track story.id) {
+          <div class="story-card">
+            <div class="story-header">
+              <span class="story-id">{{ story.userStoryId }}</span>
+              <span class="story-risk" [style.color]="getRiskColor(story.riskAssessment!.riskLevel)">
+                {{ getRiskIcon(story.riskAssessment!.riskLevel) }}
+                Score: {{ story.riskAssessment!.riskScore }}/100
+              </span>
+            </div>
+            <p class="story-name">{{ story.featureName }}</p>
+            <p class="story-sprint">{{ story.sprint }}</p>
+            <div class="story-badges">
+              @if (story.requiresPentest) { <span class="badge-sm pentest">Pentest Req.</span> }
+              @if (story.requiresThreatModeling) { <span class="badge-sm threat">Threat Modeling</span> }
+              @if (story.hasSecurityDebt) { <span class="badge-sm debt">Security Debt</span> }
+            </div>
+            @if (story.riskAssessment!.criticalFindings.length > 0) {
+              <ul class="findings-mini">
+                @for (f of story.riskAssessment!.criticalFindings.slice(0, 3); track f) {
+                  <li>{{ f }}</li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="dash-loading">
+    @if (loading) {
+      <p>⏳ Carregando dashboard...</p>
+    } @else {
+      <p>📭 Nenhuma análise cadastrada ainda.</p>
+    }
+  </div>
+</ng-template>

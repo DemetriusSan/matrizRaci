@@ -1,0 +1,182 @@
+<div class="checklist-container" *ngIf="analysis; else loading">
+
+  <!-- ── CABEÇALHO DA ANÁLISE ───────────────────────────────────────────── -->
+  <div class="analysis-header">
+    <div class="analysis-meta">
+      <h2>🛡️ Checklist: {{ analysis.featureName }}</h2>
+      <span class="tag">{{ analysis.userStoryId }}</span>
+      <span class="tag">{{ analysis.sprint }}</span>
+      @if (analysis.hasSecurityDebt) { <span class="badge debt">🏦 Security Debt</span> }
+      @if (analysis.requiresPentest) { <span class="badge pentest">🔍 Pentest Req.</span> }
+      @if (analysis.requiresThreatModeling) { <span class="badge threat">🧠 Threat Modeling</span> }
+    </div>
+
+    <!-- SCORE DE RISCO -->
+    <div class="risk-badge" *ngIf="analysis.riskAssessment" [style.border-color]="getRiskColor()">
+      <div class="risk-icon">{{ getRiskIcon() }}</div>
+      <div class="risk-info">
+        <span class="risk-level" [style.color]="getRiskColor()">
+          {{ analysis.riskAssessment.riskLevel }}
+        </span>
+        <span class="risk-score">Score: {{ analysis.riskAssessment.riskScore }}/100</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BARRA DE PROGRESSO GLOBAL ─────────────────────────────────────── -->
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>Progresso dos testes</span>
+      <strong>{{ totalProgress() }}%</strong>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" [style.width.%]="totalProgress()"></div>
+    </div>
+  </div>
+
+  <!-- ── ACHADOS CRÍTICOS ──────────────────────────────────────────────── -->
+  @if (analysis.riskAssessment?.criticalFindings?.length) {
+    <div class="critical-findings">
+      <h3>⚠️ Achados Críticos</h3>
+      <ul>
+        @for (finding of analysis.riskAssessment!.criticalFindings; track finding) {
+          <li>{{ finding }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <!-- ── SCORE BREAKDOWN ───────────────────────────────────────────────── -->
+  @if (analysis.riskAssessment) {
+    <div class="breakdown-grid">
+      <div class="breakdown-card">
+        <span class="bd-label">Sensibilidade</span>
+        <span class="bd-value">{{ analysis.riskAssessment.scoreBreakdown.sensitivityScore }}</span>
+      </div>
+      <div class="breakdown-card">
+        <span class="bd-label">Financeiro</span>
+        <span class="bd-value">{{ analysis.riskAssessment.scoreBreakdown.financialScore }}</span>
+      </div>
+      <div class="breakdown-card">
+        <span class="bd-label">Autenticação/Autorização</span>
+        <span class="bd-value">{{ analysis.riskAssessment.scoreBreakdown.authorizationScore }}</span>
+      </div>
+      <div class="breakdown-card">
+        <span class="bd-label">Vulnerabilidades</span>
+        <span class="bd-value">{{ analysis.riskAssessment.scoreBreakdown.vulnerabilityScore }}</span>
+      </div>
+      <div class="breakdown-card">
+        <span class="bd-label">Integridade MQ</span>
+        <span class="bd-value">{{ analysis.riskAssessment.scoreBreakdown.mqIntegrityScore }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- ── GRUPOS DE CHECKLIST ────────────────────────────────────────────── -->
+  @for (group of groupedItems; track group.category) {
+    <div class="checklist-group">
+      <div class="group-header" (click)="toggleCategory(group.category)">
+        <div class="group-title-area">
+          <span class="chevron">{{ isCategoryExpanded(group.category) ? '▼' : '▶' }}</span>
+          <h3>{{ group.category }}</h3>
+          <span class="item-count">{{ group.items.length }} itens</span>
+          @if (countVulnerable(group.items) > 0) {
+            <span class="vuln-count">⚠️ {{ countVulnerable(group.items) }} vulneráv.</span>
+          }
+        </div>
+        <div class="group-progress">
+          <div class="mini-progress-track">
+            <div class="mini-progress-fill"
+                 [style.width.%]="categoryProgress(group.items)"
+                 [class.complete]="categoryProgress(group.items) === 100">
+            </div>
+          </div>
+          <span>{{ categoryProgress(group.items) }}%</span>
+        </div>
+      </div>
+
+      @if (isCategoryExpanded(group.category)) {
+        <div class="group-items">
+          @for (item of group.items; track item.id) {
+            <div class="checklist-item"
+                 [class.vulnerable]="item.status === 'Vulnerável'"
+                 [class.approved]="item.status === 'Aprovado'">
+              <div class="item-header">
+                <div class="item-meta">
+                  <span class="severity-dot"
+                        [style.background]="severityColors[item.severity]"
+                        [title]="'Severidade: ' + item.severity"></span>
+                  <span class="item-title">{{ item.title }}</span>
+                  @if (item.isMandatory) {
+                    <span class="mandatory-badge">Obrigatório</span>
+                  }
+                  @if (item.owaspRef) {
+                    <span class="owasp-ref">{{ item.owaspRef }}</span>
+                  }
+                </div>
+                <div class="item-controls">
+                  <select [ngModel]="item.status"
+                          (ngModelChange)="onStatusChange(item, $event)"
+                          [style.border-color]="statusColors[item.status]"
+                          [style.color]="statusColors[item.status]">
+                    @for (s of statusOptions; track s) {
+                      <option [value]="s">{{ s }}</option>
+                    }
+                  </select>
+                  <span class="severity-label" [style.color]="severityColors[item.severity]">
+                    {{ item.severity }}
+                  </span>
+                </div>
+              </div>
+
+              <p class="item-description">{{ item.description }}</p>
+
+              <div class="evidence-area">
+                <textarea
+                  [ngModel]="item.evidence"
+                  (blur)="onEvidenceBlur(item, $any($event.target).value)"
+                  placeholder="Descreva a evidência de teste..."
+                  rows="2">
+                </textarea>
+
+                <div class="file-upload">
+                  <label class="file-label">
+                    📎 Anexar evidência
+                    <input type="file"
+                           accept="image/*,.pdf,.txt"
+                           (change)="onEvidenceFileChange(item, $event)"
+                           hidden />
+                  </label>
+                  @if (item.evidenceFileName) {
+                    <span class="file-name">{{ item.evidenceFileName }}</span>
+                  }
+                  @if (mockUploadInProgress && pendingEvidenceItemId === item.id) {
+                    <span class="uploading">⏳ Enviando...</span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── HISTÓRICO ──────────────────────────────────────────────────────── -->
+  <div class="history-section">
+    <h3>📅 Histórico de Alterações</h3>
+    <div class="history-list">
+      @for (entry of analysis.changeHistory.slice().reverse(); track entry.timestamp) {
+        <div class="history-entry">
+          <span class="history-time">{{ entry.timestamp | date:'dd/MM/yyyy HH:mm' }}</span>
+          <span class="history-user">{{ entry.user }}</span>
+          <span class="history-action">{{ entry.action }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">Carregando análise...</div>
+</ng-template>
