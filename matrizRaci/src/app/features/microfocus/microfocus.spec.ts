@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { Microfocus } from './microfocus';
 
-import { Tutorial } from './tutorial';
-
-describe('Tutorial', () => {
-  let component: Tutorial;
-  let fixture: ComponentFixture<Tutorial>;
+describe('Microfocus', () => {
+  let component: Microfocus;
+  let fixture: ComponentFixture<Microfocus>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Tutorial],
+      imports: [Microfocus],
       providers: [provideRouter([])]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Tutorial);
+    fixture = TestBed.createComponent(Microfocus);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

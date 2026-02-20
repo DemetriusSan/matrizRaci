@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter([])]
     }).compileComponents();
   });
 
@@ -14,10 +16,21 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should toggle menu', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, matrizRaci');
+    const app = fixture.componentInstance;
+    expect(app.menuOpen).toBe(false);
+    app.toggleMenu();
+    expect(app.menuOpen).toBe(true);
+    app.toggleMenu();
+    expect(app.menuOpen).toBe(false);
+  });
+
+  it('should close menu', () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    app.menuOpen = true;
+    app.closeMenu();
+    expect(app.menuOpen).toBe(false);
   });
 });
